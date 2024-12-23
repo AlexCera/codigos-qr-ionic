@@ -1,20 +1,93 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header>
+  <ion-toolbar color="tertiary">
     <ion-title>
-      Blank
+      App Qr
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding ion-text-center">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <!-- ========= segment ========= -->
+  <ion-segment [(ngModel)]="segment" mode="md">
+    <ion-segment-button value="scan">
+      <ion-label>Escanear QR</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="generate">
+      <ion-label>Generar QR</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+
+  <!-- ========= scan ========= -->
+  <section *ngIf="segment === 'scan'" class="segment">
+    <div class="segment-content">
+      <img src="assets/images/scan-qr.webp" alt="">
+
+      <h6 class="scan-label">Escanear o cargar una imagen con un código QR</h6>
+
+      <ion-row>
+        <ion-col size="6">
+          <ion-button (click)="startScan()" class="submit" expand="block">
+            Escanear
+            <ion-icon slot="end" name="scan-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button (click)="readBarcodeFromImage()" class="submit" expand="block">
+            Cargar
+            <ion-icon slot="end" name="image-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <!-- scan result -->
+      <ion-item *ngIf="scanResult" lines="none" class="result">
+        <ion-label>
+          <p>Resultado</p>
+          <div>{{scanResult}}</div>
+        </ion-label>
+        <ion-buttons slot="end">
+          <ion-button *ngIf="isUrl()" (click)="openSiteInBrowser()" color="success">
+            <ion-icon slot="icon-only" name="globe-outline"></ion-icon>
+          </ion-button>
+          <ion-button (click)="writeToClipboard()" color="success">
+            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+
+    </div>
+  </section>
+
+  <!-- ========= generate ========= -->
+  <section *ngIf="segment === 'generate'" class="segment">
+    <div class="segment-content">
+
+      <div id="qr-image">
+        <div class="d-flex-center">
+          <div class="d-flex-center qr-wrapper">
+            <qr-code *ngIf="qrTextToGenerate" [value]="qrTextToGenerate" size="185" errorCorrectionlevel="M"></qr-code>
+            <img *ngIf="!qrTextToGenerate" src="assets/images/qr.webp" class="qr-placeholder" alt="">
+          </div>
+        </div>
+
+        <p class="ion-padding-top">{{qrTextToGenerate}}</p>
+      </div>
+
+      <!-- input -->
+      <ion-textarea label="Escribe aquí lo que quieres generar a código QR..." labelPlacement="stacked" fill="outline"
+        [(ngModel)]="qrTextToGenerate" rows="3" [autoGrow]="true">
+      </ion-textarea>
+
+      <!-- shared code qr -->
+      <ion-button *ngIf="qrTextToGenerate" (click)="captureScreen()" class="submit ion-margin-top" expand="block"
+        shape="round">
+        Compartir
+        <ion-icon slot="end" name="share-social-outline"></ion-icon>
+      </ion-button>
+
+    </div>
+  </section>
+
 </ion-content>
